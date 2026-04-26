@@ -1,0 +1,18 @@
+// Top-level Gradle build file.
+buildscript {
+  repositories {
+    google()
+    mavenCentral()
+  }
+  dependencies {
+    // AGP 4.0.2 works with Gradle 6.7.1 and can still target older Android APIs
+    classpath 'com.android.tools.build:gradle:4.0.2'
+  }
+}
+
+allprojects {
+  repositories {
+    google()
+    mavenCentral()
+  }
+}

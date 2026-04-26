@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="emby_red">#FF4757</color>
+    <color name="emby_red_dark">#E84141</color>
+    <color name="emby_blue">#3742FA</color>
+    <color name="emby_cyan">#00D2FF</color>
+    <color name="dark_bg">#121212</color>
+    <color name="card_bg">#1E1E1E</color>
+    <color name="card_border">#2D2D2D</color>
+    <color name="header_bg">#1A1A1A</color>
+    <color name="surface">#252525</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B3B3B3</color>
+    <color name="text_hint">#666666</color>
+    <color name="folder_blue">#70A1FF</color>
+    <color name="accent_gradient_start">#FF4757</color>
+    <color name="accent_gradient_end">#FF6B81</color>
+    <color name="ripple">#33FFFFFF</color>
+</resources>

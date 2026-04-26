@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#121212">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="48dp"
+        android:paddingBottom="24dp">
+
+        <ImageView
+            android:id="@+id/logoImage"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/app_icon"
+            android:contentDescription="Emby Logo" />
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sign in to your server"
+            android:textSize="13sp"
+            android:textColor="#B3B3B3"
+            android:layout_marginBottom="32dp" />
+
+        <LinearLayout
+            android:id="@+id/formContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_background"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Server URL"
+                android:textSize="12sp"
+                android:textColor="#B3B3B3"
+                
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/serverUrl"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:hint="http://192.168.1.100:8096"
+                android:inputType="textNoSuggestions"
+                android:textSize="15sp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#666666"
+                android:background="@drawable/edittext_background"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Username"
+                android:textSize="12sp"
+                android:textColor="#B3B3B3"
+                
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:hint="Enter username"
+                android:inputType="textNoSuggestions"
+                android:textSize="15sp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#666666"
+                android:background="@drawable/edittext_background"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Password"
+                android:textSize="12sp"
+                android:textColor="#B3B3B3"
+                
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:hint="Enter password"
+                android:inputType="textPassword"
+                android:textAllCaps="false"
+                android:textSize="15sp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#666666"
+                android:background="@drawable/edittext_background"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_marginBottom="24dp" />
+
+            <Button
+                android:id="@+id/loginButton"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="Sign In"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/button_background"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="24dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="v1.0.2 for Android 2.3+"
+            android:textSize="10sp"
+            android:textColor="#666666"
+            android:layout_marginTop="32dp" />
+
+    </LinearLayout>
+
+</ScrollView>
