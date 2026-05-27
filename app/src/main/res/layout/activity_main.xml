@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212">
+    android:background="@color/dark_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,7 +28,7 @@
             android:text="@string/app_name"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/text_primary"
             android:layout_marginTop="20dp" />
 
         <TextView
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:text="Sign in to your server"
             android:textSize="13sp"
-            android:textColor="#B3B3B3"
+            android:textColor="@color/text_secondary"
             android:layout_marginBottom="32dp" />
 
         <LinearLayout
@@ -52,8 +52,7 @@
                 android:layout_height="wrap_content"
                 android:text="Server URL"
                 android:textSize="12sp"
-                android:textColor="#B3B3B3"
-                
+                android:textColor="@color/text_secondary"
                 android:layout_marginBottom="8dp" />
 
             <EditText
@@ -63,8 +62,8 @@
                 android:hint="http://192.168.1.100:8096"
                 android:inputType="textNoSuggestions"
                 android:textSize="15sp"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#666666"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
                 android:background="@drawable/edittext_background"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
@@ -75,8 +74,7 @@
                 android:layout_height="wrap_content"
                 android:text="Username"
                 android:textSize="12sp"
-                android:textColor="#B3B3B3"
-                
+                android:textColor="@color/text_secondary"
                 android:layout_marginBottom="8dp" />
 
             <EditText
@@ -86,8 +84,8 @@
                 android:hint="Enter username"
                 android:inputType="textNoSuggestions"
                 android:textSize="15sp"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#666666"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
                 android:background="@drawable/edittext_background"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
@@ -98,8 +96,7 @@
                 android:layout_height="wrap_content"
                 android:text="Password"
                 android:textSize="12sp"
-                android:textColor="#B3B3B3"
-                
+                android:textColor="@color/text_secondary"
                 android:layout_marginBottom="8dp" />
 
             <EditText
@@ -108,10 +105,9 @@
                 android:layout_height="52dp"
                 android:hint="Enter password"
                 android:inputType="textPassword"
-                android:textAllCaps="false"
                 android:textSize="15sp"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#666666"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
                 android:background="@drawable/edittext_background"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
@@ -124,9 +120,8 @@
                 android:text="Sign In"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#FFFFFF"
-                android:background="@drawable/button_background"
-                android:textAllCaps="false" />
+                android:textColor="@color/text_primary"
+                android:background="@drawable/button_background" />
 
         </LinearLayout>
 
@@ -142,7 +137,7 @@
             android:layout_height="wrap_content"
             android:text="v1.0.2 for Android 2.3+"
             android:textSize="10sp"
-            android:textColor="#666666"
+            android:textColor="@color/text_hint"
             android:layout_marginTop="32dp" />
 
     </LinearLayout>

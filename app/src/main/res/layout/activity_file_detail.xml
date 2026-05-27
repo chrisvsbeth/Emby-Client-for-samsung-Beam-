@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#121212">
+    android:background="@color/dark_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:background="#1A1A1A"
+        android:background="@color/header_bg"
         android:paddingLeft="8dp"
         android:paddingRight="8dp">
 
@@ -30,7 +30,7 @@
             android:text="File Details"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/text_primary"
             android:layout_marginLeft="12dp" />
 
     </LinearLayout>
@@ -38,7 +38,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="#FF4757" />
+        android:background="@color/emby_red" />
 
     <ProgressBar
         android:id="@+id/loadingProgress"
@@ -71,7 +71,7 @@
                 android:id="@+id/titleText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/text_primary"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:gravity="center"
@@ -84,10 +84,9 @@
                 android:layout_height="52dp"
                 android:text="Play"
                 android:textSize="16sp"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/text_primary"
                 android:textStyle="bold"
-                android:background="@drawable/button_background"
-                android:textAllCaps="false" />
+                android:background="@drawable/button_background" />
 
             <LinearLayout
                 android:id="@+id/movieDetailsLayout"
@@ -107,14 +106,14 @@
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:text="Year"
-                        android:textColor="#B3B3B3"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/yearText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/text_primary"
                         android:textSize="12sp" />
 
                 </LinearLayout>
@@ -129,14 +128,14 @@
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:text="Duration"
-                        android:textColor="#B3B3B3"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/durationText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/text_primary"
                         android:textSize="12sp" />
 
                 </LinearLayout>
@@ -151,14 +150,14 @@
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:text="Rating"
-                        android:textColor="#B3B3B3"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/ratingText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#FFD700"
+                        android:textColor="@color/rating_gold"
                         android:textSize="12sp" />
 
                 </LinearLayout>
@@ -173,14 +172,14 @@
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:text="Genres"
-                        android:textColor="#B3B3B3"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/genresText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/text_primary"
                         android:textSize="12sp" />
 
                 </LinearLayout>
@@ -188,7 +187,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#2D2D2D"
+                    android:background="@color/card_border"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp" />
 
@@ -196,7 +195,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Plot"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -204,7 +203,7 @@
                     android:id="@+id/plotText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="#B3B3B3"
+                    android:textColor="@color/text_secondary"
                     android:textSize="13sp"
                     android:layout_marginTop="8dp"
                     android:lineSpacingExtra="4dp" />

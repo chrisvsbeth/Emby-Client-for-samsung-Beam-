@@ -192,7 +192,65 @@ public class EmbyApiClient {
         }
         return items;
     }
-    
+
+    public List<MediaItem> getResumeItems(int limit) {
+        List<MediaItem> items = new ArrayList<MediaItem>();
+        HttpURLConnection conn = null;
+        try {
+            String endpoint = serverUrl + "/emby/Users/" + userId + "/Items?Filters=IsResumable&Recursive=true&Limit=" + limit + "&Fields=BasicSyncInfo,MediaInfo,Images,UserData&api_key=" + accessToken;
+            Log.i("EmbyClient", "Resume URL: " + endpoint);
+            URL url = new URL(endpoint);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(15000);
+            lastResponseCode = conn.getResponseCode();
+            Log.i("EmbyClient", "Resume response code: " + lastResponseCode);
+            if (lastResponseCode == 200) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+                String respStr = response.toString();
+                Log.i("EmbyClient", "Resume response: " + respStr.substring(0, Math.min(respStr.length(), 500)));
+                JSONObject jsonResp = new JSONObject(respStr);
+                if (jsonResp.has("Items")) {
+                    JSONArray jsonArray = jsonResp.getJSONArray("Items");
+                    Log.i("EmbyClient", "Resume items count: " + jsonArray.length());
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject obj = jsonArray.getJSONObject(i);
+                        MediaItem item = new MediaItem();
+                        item.id = obj.optString("Id", "");
+                        item.name = obj.optString("Name", "Unknown");
+                        item.type = obj.optString("Type", "Unknown");
+                        item.isFolder = obj.optBoolean("IsFolder", false);
+                        item.runTimeTicks = obj.optLong("RunTimeTicks", 0);
+                        if (obj.has("ImageTags")) {
+                            JSONObject imageTags = obj.getJSONObject("ImageTags");
+                            if (imageTags.has("Primary")) {
+                                item.imageTag = imageTags.getString("Primary");
+                            }
+                        }
+                        if (obj.has("UserData")) {
+                            JSONObject userData = obj.getJSONObject("UserData");
+                            item.playbackPositionTicks = userData.optLong("PlaybackPositionTicks", 0);
+                        }
+                        items.add(item);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e("EmbyClient", "Error getting resume items: " + e.getMessage());
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+        return items;
+    }
+
     public List<MediaItem> getViews() {
         List<MediaItem> views = new ArrayList<MediaItem>();
         HttpURLConnection conn = null;
@@ -344,6 +402,11 @@ public class EmbyApiClient {
                         mediaItem.type = item.optString("Type", "Unknown");
                         mediaItem.isFolder = item.optBoolean("IsFolder", false);
                         mediaItem.runTimeTicks = item.optLong("RunTimeTicks", 0);
+                        mediaItem.indexNumber = item.optInt("IndexNumber", -1);
+                        mediaItem.parentIndexNumber = item.optInt("ParentIndexNumber", -1);
+                        mediaItem.parentId = item.optString("ParentId", null);
+                        mediaItem.albumId = item.optString("AlbumId", null);
+                        mediaItem.collectionType = item.optString("CollectionType", null);
                         
                         if (item.has("ImageTags")) {
                             JSONObject imageTags = item.getJSONObject("ImageTags");
@@ -368,7 +431,64 @@ public class EmbyApiClient {
         return items;
     }
 
-    public String getPlaybackUrl(String itemId, int quality, long startPositionMs) {
+    public List<MediaItem> getAllTvShows() {
+        List<MediaItem> items = new ArrayList<MediaItem>();
+        HttpURLConnection conn = null;
+        try {
+            String endpoint = serverUrl + "/emby/Users/" + userId + "/Items?Recursive=true&IncludeItemTypes=Series&Fields=BasicSyncInfo,MediaInfo,Images&api_key=" + accessToken;
+
+            URL url = new URL(endpoint);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(15000);
+
+            lastResponseCode = conn.getResponseCode();
+            Log.i("EmbyClient", "getAllTvShows response: " + lastResponseCode);
+
+            if (lastResponseCode == 200) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+
+                JSONObject json = new JSONObject(response.toString());
+                JSONArray itemsArray = json.optJSONArray("Items");
+                if (itemsArray != null) {
+                    for (int i = 0; i < itemsArray.length(); i++) {
+                        JSONObject obj = itemsArray.getJSONObject(i);
+                        MediaItem item = new MediaItem();
+                        item.id = obj.optString("Id", "");
+                        item.name = obj.optString("Name", "Unknown");
+                        item.type = obj.optString("Type", "Series");
+                        item.isFolder = true;
+                        item.runTimeTicks = obj.optLong("RunTimeTicks", 0);
+
+                        if (obj.has("ImageTags")) {
+                            JSONObject imageTags = obj.getJSONObject("ImageTags");
+                            if (imageTags.has("Primary")) {
+                                item.imageTag = imageTags.getString("Primary");
+                            }
+                        }
+
+                        items.add(item);
+                    }
+                }
+                Log.i("EmbyClient", "Found " + items.size() + " TV shows");
+            }
+        } catch (Exception e) {
+            Log.e("EmbyClient", "Error getting TV shows: " + e.getMessage(), e);
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+        return items;
+    }
+
+    public String getPlaybackUrl(String itemId, int quality, long startPositionMs, String playSessionId) {
         int videoBitrate = 0;
         int maxWidth = 0;
         boolean directPlay = false;
@@ -383,31 +503,126 @@ public class EmbyApiClient {
             case 6: videoBitrate = 250000; maxWidth = 480; break;
         }
 
-        String playSession = java.util.UUID.randomUUID().toString();
+        String psId = (playSessionId != null) ? playSessionId : java.util.UUID.randomUUID().toString();
         String baseUrl = serverUrl + "/emby/Videos/" + itemId + "/stream";
         long startTicks = startPositionMs * 10000;
 
         if (directPlay && startPositionMs == 0) {
-            String url = baseUrl + ".mp4?api_key=" + accessToken + 
-                   "&PlaySessionId=" + playSession + 
+            String url = baseUrl + ".mp4?api_key=" + accessToken +
+                   "&PlaySessionId=" + psId +
                    "&static=true";
+            Log.i("EmbyClient", "getPlaybackUrl direct: " + url);
             return url;
         } else {
-            String url = baseUrl + ".ts?api_key=" + accessToken + 
-                   "&PlaySessionId=" + playSession + 
-                   "&VideoBitrate=" + videoBitrate + 
+            String url = baseUrl + ".ts?api_key=" + accessToken +
+                   "&PlaySessionId=" + psId +
+                   "&VideoBitrate=" + videoBitrate +
                    "&MaxWidth=" + maxWidth +
                    "&VideoCodec=h264" +
-                   "&AudioCodec=aac";
+                   "&AudioCodec=aac" +
+                   "&TranscodeContainer=ts" +
+                   "&RequireNonSegmentalStreaming=true";
             if (startPositionMs > 0) {
                 url += "&StartTimeTicks=" + startTicks;
             }
+            Log.i("EmbyClient", "getPlaybackUrl transcode: " + url);
             return url;
         }
     }
     
+    public String getPlaybackUrl(String itemId, int quality, long startPositionMs) {
+        return getPlaybackUrl(itemId, quality, startPositionMs, null);
+    }
+    
     public String getPlaybackUrl(String itemId, int quality) {
-        return getPlaybackUrl(itemId, quality, 0);
+        return getPlaybackUrl(itemId, quality, 0, null);
+    }
+
+    public boolean reportCapabilities() {
+        HttpURLConnection conn = null;
+        try {
+            String urlStr = serverUrl + "/emby/Sessions/Capabilities?api_key=" + accessToken;
+            URL url = new URL(urlStr);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("X-Emby-Client", "Emby Client");
+            conn.setRequestProperty("X-Emby-Client-Version", "1.0.2");
+            conn.setRequestProperty("X-Emby-Device-Id", "android-samsung-galaxy-beam-gt-i8530");
+            conn.setRequestProperty("X-Emby-Device-Name", "Samsung Galaxy Beam");
+            conn.setDoOutput(true);
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(5000);
+
+            JSONObject caps = new JSONObject();
+            JSONArray playableTypes = new JSONArray();
+            playableTypes.put("Video");
+            playableTypes.put("Audio");
+            caps.put("PlayableMediaTypes", playableTypes);
+            caps.put("SupportedMediaTypes", playableTypes);
+            caps.put("SupportsContentUploading", false);
+            caps.put("SupportsSync", false);
+            caps.put("SupportsMediaControl", false);
+            // Tell server we do NOT support HLS so it uses progressive MP4/TS
+            caps.put("SupportsHls", false);
+
+            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+            writer.write(caps.toString());
+            writer.flush();
+            writer.close();
+
+            int code = conn.getResponseCode();
+            Log.i("EmbyClient", "Capabilities report: " + code);
+            return code == 200 || code == 204;
+        } catch (Exception e) {
+            Log.e("EmbyClient", "Error reporting capabilities: " + e.getMessage());
+            return false;
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
+    public String getHlsPlaybackUrl(String itemId, int quality, long startPositionMs) {
+        int videoBitrate = 0;
+        int maxWidth = 0;
+
+        switch (quality) {
+            case 1: videoBitrate = 2000000; maxWidth = 1920; break;
+            case 2: videoBitrate = 1500000; maxWidth = 1280; break;
+            case 3: videoBitrate = 1000000; maxWidth = 1280; break;
+            case 4: videoBitrate = 800000; maxWidth = 854; break;
+            case 5: videoBitrate = 400000; maxWidth = 640; break;
+            case 6: videoBitrate = 250000; maxWidth = 480; break;
+            default: videoBitrate = 400000; maxWidth = 640; break;
+        }
+
+        String playSession = java.util.UUID.randomUUID().toString();
+        String baseUrl = serverUrl + "/emby/Videos/" + itemId + "/stream";
+        long startTicks = startPositionMs * 10000;
+
+        String url = baseUrl + ".m3u8?api_key=" + accessToken +
+               "&PlaySessionId=" + playSession +
+               "&VideoBitrate=" + videoBitrate +
+               "&MaxWidth=" + maxWidth +
+               "&VideoCodec=h264" +
+               "&AudioCodec=aac" +
+               "&TranscodeContainer=ts" +
+               "&AllowVideoStreamCopy=false";
+        if (startPositionMs > 0) {
+            url += "&StartTimeTicks=" + startTicks;
+        }
+        Log.i("EmbyClient", "getHlsPlaybackUrl: " + url);
+        return url;
+    }
+
+    public String getAudioUrl(String itemId) {
+        String url = serverUrl + "/emby/Audio/" + itemId + "/stream.mp3?api_key=" + accessToken + "&static=true";
+        Log.i("EmbyClient", "getAudioUrl: " + url);
+        return url;
+    }
+
+    public String getHlsPlaybackUrl(String itemId, int quality) {
+        return getHlsPlaybackUrl(itemId, quality, 0);
     }
 
     public String getMediaSourceId(String itemId) {
@@ -468,6 +683,13 @@ public class EmbyApiClient {
         public boolean isFolder;
         public String imageTag;
         public long runTimeTicks;
+        public int indexNumber = -1;
+        public int parentIndexNumber = -1;
+        public String parentId;
+        public String albumId;
+        public String collectionType;
+        public String imageItemId;
+        public long playbackPositionTicks;
     }
     
     public static class MediaItemInfo {
@@ -524,18 +746,18 @@ public class EmbyApiClient {
                 info.type = json.optString("Type", "Unknown");
                 
                 String runTime = json.optString("RunTimeTicks", "");
-                if (!runTime.isEmpty()) {
+                if (runTime.length() > 0) {
                     info.runTimeTicks = Long.parseLong(runTime);
                 }
                 
                 String prodYear = json.optString("ProductionYear", "");
-                if (!prodYear.isEmpty()) {
+                if (prodYear.length() > 0) {
                     info.productionYear = Integer.parseInt(prodYear);
                 }
                 
                 info.plot = json.optString("Overview", "");
                 String rating = json.optString("CommunityRating", "");
-                if (!rating.isEmpty()) {
+                if (rating.length() > 0) {
                     info.communityRating = Double.parseDouble(rating);
                 }
                 
@@ -576,7 +798,7 @@ public class EmbyApiClient {
     }
     
     public String getImageUrl(String itemId, String imageTag) {
-        return serverUrl + "/emby/Items/" + itemId + "/Images/Primary?maxHeight=48&maxWidth=36&tag=" + imageTag + "&api_key=" + accessToken;
+        return serverUrl + "/emby/Items/" + itemId + "/Images/Primary?maxHeight=128&maxWidth=128&tag=" + imageTag + "&api_key=" + accessToken;
     }
     
     public String getImageUrl(String itemId, String imageTag, int maxWidth, int maxHeight) {
@@ -627,7 +849,7 @@ public class EmbyApiClient {
         }
     }
     
-    public boolean reportPlaybackProgress(String itemId, long positionTicks, boolean isPlaying, String eventName, String playSessionId) {
+    public boolean reportPlaybackProgress(String itemId, long positionTicks, boolean isPlaying, String eventName, String playSessionId, boolean canSeek, String playMethod) {
         HttpURLConnection conn = null;
         try {
             String urlStr = serverUrl + "/emby/Sessions/Playing/Progress?api_key=" + accessToken;
@@ -642,13 +864,18 @@ public class EmbyApiClient {
             
             JSONObject body = new JSONObject();
             body.put("ItemId", itemId);
+            body.put("CanSeek", canSeek);
             body.put("IsPaused", !isPlaying);
             body.put("PositionTicks", positionTicks);
+            body.put("MediaSourceId", "mediasource_" + itemId);
             if (eventName != null) {
                 body.put("EventName", eventName);
             }
             if (playSessionId != null) {
                 body.put("PlaySessionId", playSessionId);
+            }
+            if (playMethod != null) {
+                body.put("PlayMethod", playMethod);
             }
             
             OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
@@ -667,7 +894,27 @@ public class EmbyApiClient {
         }
     }
     
-    public boolean reportPlaybackStopped(String itemId, long positionTicks, String playSessionId) {
+    public boolean deleteActiveEncoding(String playSessionId) {
+        HttpURLConnection conn = null;
+        try {
+            String urlStr = serverUrl + "/emby/Videos/ActiveEncodings?api_key=" + accessToken + "&PlaySessionId=" + playSessionId;
+            URL url = new URL(urlStr);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("DELETE");
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(5000);
+            int code = conn.getResponseCode();
+            Log.i("EmbyClient", "Delete active encoding: " + code);
+            return code == 200 || code == 204;
+        } catch (Exception e) {
+            Log.e("EmbyClient", "Error deleting active encoding: " + e.getMessage());
+            return false;
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
+    public boolean reportPlaybackStopped(String itemId, long positionTicks, String playSessionId, String playMethod) {
         HttpURLConnection conn = null;
         try {
             String urlStr = serverUrl + "/emby/Sessions/Playing/Stopped?api_key=" + accessToken;
@@ -683,8 +930,12 @@ public class EmbyApiClient {
             JSONObject body = new JSONObject();
             body.put("ItemId", itemId);
             body.put("PositionTicks", positionTicks);
+            body.put("MediaSourceId", "mediasource_" + itemId);
             if (playSessionId != null) {
                 body.put("PlaySessionId", playSessionId);
+            }
+            if (playMethod != null) {
+                body.put("PlayMethod", playMethod);
             }
             
             OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());

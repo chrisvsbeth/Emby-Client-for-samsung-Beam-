@@ -17,8 +17,6 @@ build/
 
 # Gradle files
 .gradle/
-build/
-local.properties
 
 # IntelliJ
 *.iml
@@ -35,7 +33,11 @@ local.properties
 captures/
 .externalNativeBuild/
 .cxx/
-local.properties
+
+# Backup and archives
+backups/
+*.zip
+*.tar.gz
 
 # OS-specific files
 .DS_Store

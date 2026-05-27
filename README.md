@@ -1,98 +1,57 @@
-# Emby Client for Android
+# Emby Client for Samsung GT-I8530 (Android 4.0.4)
 
-A lightweight Emby/Jellyfin client for Android 2.3.1+ devices.
+A lightweight Emby/Jellyfin client for Android 4.0.4 (API 10), designed for the Samsung GT-I8530.
+
+Target device: **Samsung GT-I8530** (Android 4.0.4, 480×800 hdpi, dual-core ARMv7).
 
 ## Features
 
-- Login to any Emby or Jellyfin server
-- Browse movies and folders
-- View movie details (year, duration, rating, genres, plot)
-- Play videos with quality selection
-- Resume playback support
-- Recently added movies section
-- Search functionality
-- Modern dark theme UI
-
-## Requirements
-
-- Android 2.3.1 (Gingerbread) or higher
-- Emby Server or Jellyfin Server
-- Internet connection
+- Login with credentials saved to SharedPreferences (server, username, password)
+- Browse Movies, TV Shows (Series → Seasons → Episodes), Music, Collections
+- In-app video playback with server-side seek and resume support
+- Dedicated audio player with album track list, prev/play-pause/next
+- Progress reporting back to the server
+- Resume playback indicator (Continue Watching row)
+- Kill transcoding on exit
+- Dark theme with Emby-red color scheme
+- All quality levels use TS progressive download (`RequireNonSegmentalStreaming=true`)
 
 ## Building
 
-### Prerequisites
-
-- Android SDK
-- Java JDK 8
-- Gradle
-
-### Build Commands
-
 ```bash
-# Build debug APK
+git clone <repo>
+cd EmbyClient
+# Ensure JAVA_HOME and ANDROID_HOME are set
 ./gradlew assembleDebug
-
-# Build release APK
-./gradlew assembleRelease
 ```
 
-The APK will be generated at `app/build/outputs/apk/debug/app-debug.apk`
+APK output: `app/build/outputs/apk/debug/app-debug.apk`
 
-## Installation
+## Requirements
 
-1. Enable "Unknown Sources" in Android settings
-2. Transfer the APK to your device
-3. Open and install
+- Java 17+
+- Android SDK (platform android-10 or later)
+- Gradle 7.5.1 (wrapper included)
 
-## Usage
+## Architecture
 
-1. Enter your server URL (e.g., http://192.168.1.100:8096)
-2. Enter your username and password
-3. Browse your media library
-4. Tap a movie to view details
-5. Select quality and play
+The app uses only Android SDK APIs (API Level 10). No AndroidX, no third-party libraries.
 
-## Quality Options
-
-- Original (Direct Play) - Best quality, direct stream
-- 1080p HD (~2Mbps)
-- 720p HD (~1.5Mbps)
-- 576p SD (~1Mbps)
-- 480p SD (~800Kbps)
-- 360p Low (~400Kbps)
-
-## Project Structure
-
-```
-github/
-├── app/
-│   └── src/main/
-│       ├── java/com/emby/client/
-│       │   ├── MainActivity.java      # Login screen
-│       │   ├── ContentActivity.java   # Media browser
-│       │   ├── FileDetailActivity.java # Movie details
-│       │   ├── PlayerActivity.java    # Video player
-│       │   ├── EmbyApiClient.java     # API wrapper
-│       │   └── EmbyApp.java           # Application class
-│       └── res/
-│           ├── layout/               # XML layouts
-│           ├── values/               # Colors, themes, strings
-│           └── drawable/             # Icons, backgrounds
-├─�� gradle/wrapper/                   # Gradle wrapper
-├── build.gradle                      # Root build config
-├── settings.gradle                   # Project settings
-├── gradle.properties                 # Gradle properties
-└── gradlew                            # Build script (Unix)
-└── gradlew.bat                        # Build script (Windows)
-```
-
-## License
-
-This project is for educational purposes. Use at your own risk.
+- **MainActivity** – Login screen
+- **ContentActivity** – Browse library views (movies, TV shows, music, collections)
+- **FileDetailActivity** – Item details with play/resume buttons
+- **PlayerActivity** – Video player with server-side seek via URL rebuild
+- **MusicPlayerActivity** – Audio player with playlist
+- **EmbyApiClient** – HTTP client for Emby REST API
+- **HlsPlaybackEngine** – Local HLS proxy (unused, TS progressive download used instead)
 
 ## Notes
 
-- This app is optimized for older Android devices
-- Video seeking during playback has limitations on some streaming formats
-- Some features may require specific Emby/Jellyfin server configurations
+- This app targets API 10 (Android 2.3.6 Gingerbread) — the maximum supported by the Samsung GT-I8530.
+- Video playback uses `VideoView` + `MediaPlayer` (not ExoPlayer or MediaCodec).
+- Seeking is performed server-side: the URL is rebuilt with `StartTimeTicks` and `seekOffset`.
+- Resume positions are stored locally in SharedPreferences (server-side position persistence may not work on all Emby versions).
+
+## License
+
+MIT

@@ -1,51 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="72dp"
+    android:layout_height="84dp"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:background="#1E1E1E"
+    android:background="@color/card_bg"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingTop="10dp"
     android:paddingBottom="10dp">
 
-    <FrameLayout
-        android:id="@+id/iconFrame"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
-        android:background="@drawable/image_frame">
-
-        <ImageView
-            android:id="@+id/itemImage"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/itemIcon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="📁"
-            android:textSize="26sp"
-            android:gravity="center" />
-
-    </FrameLayout>
+    <ImageView
+        android:id="@+id/itemImage"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:scaleType="centerInside"
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:layout_marginLeft="14dp">
+        android:layout_marginLeft="16dp">
 
         <TextView
             android:id="@+id/itemName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textColor="@color/text_primary"
             android:textStyle="bold"
             android:ellipsize="end"
             android:maxLines="2" />
@@ -54,19 +38,33 @@
             android:id="@+id/itemType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="#B3B3B3"
+            android:textSize="13sp"
+            android:textColor="@color/text_secondary"
             android:ellipsize="end"
             android:maxLines="1"
-            android:layout_marginTop="3dp" />
+            android:layout_marginTop="4dp" />
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/resumeBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:text="Resume"
+        android:textSize="12sp"
+        android:textColor="@color/accent_amber"
+        android:gravity="center"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:background="@drawable/icon_button_bg"
+        android:visibility="gone"
+        android:layout_marginRight="8dp" />
+
     <ImageView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
         android:src="@android:drawable/ic_media_play"
-        android:tint="#FF4757"
+        android:tint="@color/emby_red"
         android:scaleType="centerInside" />
 
 </LinearLayout>

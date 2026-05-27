@@ -5,8 +5,8 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    // AGP 4.0.2 works with Gradle 6.7.1 and can still target older Android APIs
-    classpath 'com.android.tools.build:gradle:4.0.2'
+    // AGP 7.4.2 works with Gradle 7.5.1 and supports API 15+
+    classpath 'com.android.tools.build:gradle:7.4.2'
   }
 }
 

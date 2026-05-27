@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Resume Playback?"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold"
             android:gravity="center" />
@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Continue from where you left off?"
-            android:textColor="#B3B3B3"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp"
             android:gravity="center"
             android:layout_marginTop="8dp" />
@@ -54,7 +54,7 @@
             android:id="@+id/resumeTimeLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#FFAA00"
+            android:textColor="@color/accent_amber"
             android:textSize="13sp"
             android:gravity="center"
             android:layout_marginTop="8dp" />
@@ -73,8 +73,8 @@
                 android:layout_weight="1"
                 android:text="Start Over"
                 android:textSize="14sp"
-                android:background="#333333"
-                android:textColor="#FFFFFF" />
+                android:background="@color/divider"
+                android:textColor="@color/text_primary" />
 
             <Button
                 android:id="@+id/resumeBtn"
@@ -84,7 +84,7 @@
                 android:text="Resume"
                 android:textSize="14sp"
                 android:background="@drawable/button_background"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/text_primary"
                 android:layout_marginLeft="12dp" />
 
         </LinearLayout>
@@ -97,21 +97,24 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:orientation="vertical"
-        android:background="@drawable/player_controls_bg"
-        android:padding="12dp">
+        android:paddingBottom="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp">
 
             <TextView
                 android:id="@+id/currentTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0:00"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/text_primary"
                 android:textSize="12sp" />
 
             <SeekBar
@@ -127,7 +130,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0:00"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/text_primary"
                 android:textSize="12sp" />
 
             <TextView
@@ -135,7 +138,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="(-0:00)"
-                android:textColor="#888888"
+                android:textColor="@color/text_muted"
                 android:textSize="11sp"
                 android:layout_marginLeft="8dp" />
 
@@ -151,31 +154,36 @@
             <Button
                 android:id="@+id/rewindBtn"
                 android:layout_width="56dp"
-                android:layout_height="44dp"
+                android:layout_height="52dp"
                 android:text="&lt;&lt;"
-                android:textSize="16sp"
-                android:background="@drawable/icon_button_bg"
-                android:textColor="#FFFFFF" />
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:background="@drawable/btn_control"
+                android:textColor="@color/text_primary"
+                android:gravity="center" />
 
             <Button
                 android:id="@+id/playPauseBtn"
-                android:layout_width="64dp"
-                android:layout_height="44dp"
-                android:text="Play"
-                android:textSize="15sp"
-                android:background="@drawable/button_background"
-                android:textColor="#FFFFFF"
-                android:layout_marginLeft="24dp"
-                android:layout_marginRight="24dp" />
+                android:layout_width="72dp"
+                android:layout_height="60dp"
+                android:text="\u25B6"
+                android:textSize="26sp"
+                android:background="@drawable/btn_play"
+                android:textColor="@color/text_primary"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="28dp"
+                android:gravity="center" />
 
             <Button
                 android:id="@+id/forwardBtn"
                 android:layout_width="56dp"
-                android:layout_height="44dp"
+                android:layout_height="52dp"
                 android:text="&gt;&gt;"
-                android:textSize="16sp"
-                android:background="@drawable/icon_button_bg"
-                android:textColor="#FFFFFF" />
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:background="@drawable/btn_control"
+                android:textColor="@color/text_primary"
+                android:gravity="center" />
 
         </LinearLayout>
 
@@ -183,29 +191,18 @@
             android:id="@+id/videoTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
-            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
             android:gravity="center" />
-
-        <TextView
-            android:id="@+id/qualityLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="#FFAA00"
-            android:textSize="12sp"
-            android:gravity="center"
-            android:layout_marginTop="4dp" />
 
         <TextView
             android:id="@+id/statsLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#888888"
+            android:textColor="@color/text_muted"
             android:textSize="10sp"
-            android:gravity="center"
-            android:layout_marginTop="4dp" />
+            android:gravity="center" />
 
     </LinearLayout>
 
@@ -217,16 +214,6 @@
         android:layout_margin="16dp"
         android:background="@drawable/icon_button_bg"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
-        android:scaleType="centerInside" />
-
-    <ImageButton
-        android:id="@+id/externalPlayerBtn"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_gravity="top|right"
-        android:layout_margin="16dp"
-        android:background="@drawable/icon_button_bg"
-        android:src="@android:drawable/ic_menu_share"
         android:scaleType="centerInside" />
 
 </FrameLayout>

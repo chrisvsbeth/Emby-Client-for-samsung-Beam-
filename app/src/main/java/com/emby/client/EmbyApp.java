@@ -14,12 +14,9 @@ import java.util.Locale;
 public class EmbyApp extends Application {
     private static final String TAG = "EmbyClient";
     private static final String CRASH_LOG_FILE = "crash_log.txt";
-    private static EmbyApp instance;
-
     @Override
     public void onCreate() {
         super.onCreate();
-        instance = this;
 
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             public void uncaughtException(Thread thread, Throwable throwable) {
@@ -91,46 +88,4 @@ public class EmbyApp extends Application {
         }
     }
 
-    public static EmbyApp getInstance() {
-        return instance;
-    }
-
-    public File getCrashLogFile() {
-        return new File(getFilesDir(), CRASH_LOG_FILE);
-    }
-
-    public String getCrashLog() {
-        StringBuilder sb = new StringBuilder();
-        File crashFile = getCrashLogFile();
-        if (crashFile.exists()) {
-            java.io.BufferedReader reader = null;
-            try {
-                reader = new java.io.BufferedReader(new java.io.FileReader(crashFile));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line).append("\n");
-                }
-            } catch (IOException e) {
-                sb.append("Error reading crash log: ").append(e.getMessage());
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        // ignore
-                    }
-                }
-            }
-        } else {
-            sb.append("No crash log found.");
-        }
-        return sb.toString();
-    }
-
-    public void clearCrashLog() {
-        File crashFile = getCrashLogFile();
-        if (crashFile.exists()) {
-            crashFile.delete();
-        }
-    }
 }

@@ -7,12 +7,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -22,15 +21,17 @@ public class MainActivity extends Activity {
     private static final String TAG = "EmbyClient";
     private static final String PREFS_NAME = "EmbyClientPrefs";
     private static final String KEY_SERVER_URL = "server_url";
+    private static final String KEY_USERNAME = "username";
+    private static final String KEY_PASSWORD = "password";
+    private static final String KEY_REMEMBER = "remember_credentials";
 
-    private ImageView logoImage;
-    private TextView titleText;
     private EditText serverUrlEdit;
     private EditText usernameEdit;
     private EditText passwordEdit;
     private Button loginButton;
     private ProgressBar progressBar;
     private LinearLayout formContainer;
+    private CheckBox rememberCheck;
 
     private Handler mainHandler;
 
@@ -41,17 +42,11 @@ public class MainActivity extends Activity {
 
         try {
             setContentView(R.layout.activity_main);
-            Log.i(TAG, "Layout inflated");
-
             mainHandler = new Handler(Looper.getMainLooper());
-
             initViews();
-            loadSavedServerUrl();
+            loadSavedCredentials();
             setupListeners();
-
             Log.i(TAG, "MainActivity ready - Android SDK " + android.os.Build.VERSION.SDK_INT);
-            Log.i(TAG, "App: com.emby.client v1.0.2");
-
         } catch (Exception e) {
             Log.e(TAG, "FATAL: Failed to create activity: " + e.getClass().getName(), e);
             Toast.makeText(this, "Failed to start app: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -60,25 +55,41 @@ public class MainActivity extends Activity {
     }
 
     private void initViews() {
-        logoImage = (ImageView) findViewById(R.id.logoImage);
-        titleText = (TextView) findViewById(R.id.titleText);
         serverUrlEdit = (EditText) findViewById(R.id.serverUrl);
         usernameEdit = (EditText) findViewById(R.id.username);
         passwordEdit = (EditText) findViewById(R.id.password);
         loginButton = (Button) findViewById(R.id.loginButton);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         formContainer = (LinearLayout) findViewById(R.id.formContainer);
+        rememberCheck = new CheckBox(this);
+        rememberCheck.setText("Remember credentials");
+        rememberCheck.setTextColor(0xFFB3B3B3);
+        rememberCheck.setChecked(true);
+        formContainer.addView(rememberCheck, formContainer.indexOfChild(findViewById(R.id.loginButton)));
     }
 
-    private void loadSavedServerUrl() {
+    private void loadSavedCredentials() {
         try {
             SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
             String savedServerUrl = prefs.getString(KEY_SERVER_URL, "");
+            String savedUsername = prefs.getString(KEY_USERNAME, "");
+            String savedPassword = prefs.getString(KEY_PASSWORD, "");
+            boolean remember = prefs.getBoolean(KEY_REMEMBER, true);
+
+            rememberCheck.setChecked(remember);
             if (savedServerUrl != null && !savedServerUrl.equals("")) {
                 serverUrlEdit.setText(savedServerUrl);
             }
+            if (remember) {
+                if (savedUsername != null && !savedUsername.equals("")) {
+                    usernameEdit.setText(savedUsername);
+                }
+                if (savedPassword != null && !savedPassword.equals("")) {
+                    passwordEdit.setText(savedPassword);
+                }
+            }
         } catch (Exception e) {
-            Log.w(TAG, "Could not load saved server URL: " + e.getMessage());
+            Log.w(TAG, "Could not load saved credentials: " + e.getMessage());
         }
     }
 
@@ -99,31 +110,24 @@ public class MainActivity extends Activity {
         final String password;
 
         try {
-            CharSequence serverSeq = serverUrlEdit.getText();
-            CharSequence userSeq = usernameEdit.getText();
-            CharSequence passSeq = passwordEdit.getText();
-
-            serverUrl = serverSeq != null ? serverSeq.toString().trim() : "";
-            username = userSeq != null ? userSeq.toString().trim() : "";
-            password = passSeq != null ? passSeq.toString() : "";
+            serverUrl = serverUrlEdit.getText() != null ? serverUrlEdit.getText().toString().trim() : "";
+            username = usernameEdit.getText() != null ? usernameEdit.getText().toString().trim() : "";
+            password = passwordEdit.getText() != null ? passwordEdit.getText().toString() : "";
         } catch (Exception e) {
             Log.e(TAG, "Error reading fields: " + e.getMessage(), e);
             Toast.makeText(this, "Error reading input", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Log.i(TAG, "Server URL: " + serverUrl);
-        Log.i(TAG, "Username: " + username);
-
-        if (serverUrl == null || serverUrl.equals("")) {
+        if (serverUrl.equals("")) {
             serverUrlEdit.setError("Server URL is required");
             return;
         }
-        if (username == null || username.equals("")) {
+        if (username.equals("")) {
             usernameEdit.setError("Username is required");
             return;
         }
-        if (password == null || password.equals("")) {
+        if (password.equals("")) {
             passwordEdit.setError("Password is required");
             return;
         }
@@ -135,10 +139,7 @@ public class MainActivity extends Activity {
             @Override
             public void run() {
                 try {
-                    Log.i(TAG, "Creating EmbyApiClient...");
                     final EmbyApiClient apiClient = new EmbyApiClient(serverUrl);
-
-                    Log.i(TAG, "Calling authenticate to: " + serverUrl);
                     final boolean success = apiClient.authenticate(username, password);
 
                     mainHandler.post(new Runnable() {
@@ -149,8 +150,7 @@ public class MainActivity extends Activity {
 
                             if (success) {
                                 Log.i(TAG, "Login SUCCESS!");
-                                Log.i(TAG, "User ID: " + apiClient.getUserId());
-                                saveServerUrl(serverUrl);
+                                saveCredentials(serverUrl, username, password);
                                 navigateToContent(apiClient);
                             } else {
                                 String error = apiClient.getLastError();
@@ -180,13 +180,22 @@ public class MainActivity extends Activity {
         }).start();
     }
 
-    private void saveServerUrl(String url) {
+    private void saveCredentials(String url, String user, String pass) {
         try {
+            boolean remember = rememberCheck.isChecked();
             SharedPreferences.Editor prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
             prefs.putString(KEY_SERVER_URL, url);
-            prefs.commit();
+            prefs.putBoolean(KEY_REMEMBER, remember);
+            if (remember) {
+                prefs.putString(KEY_USERNAME, user);
+                prefs.putString(KEY_PASSWORD, pass);
+            } else {
+                prefs.remove(KEY_USERNAME);
+                prefs.remove(KEY_PASSWORD);
+            }
+            prefs.apply();
         } catch (Exception e) {
-            Log.w(TAG, "Could not save server URL: " + e.getMessage());
+            Log.w(TAG, "Could not save credentials: " + e.getMessage());
         }
     }
 
