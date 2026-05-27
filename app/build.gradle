@@ -13,12 +13,13 @@ android {
 
     signingConfigs {
         release {
-            def ksFile = project.hasProperty('RELEASE_STORE_FILE') ? file(project.property('RELEASE_STORE_FILE')) : null
+            def ksPath = project.hasProperty('RELEASE_STORE_FILE') ? project.property('RELEASE_STORE_FILE') : System.getenv('KEYSTORE_PATH')
+            def ksFile = ksPath ? file(ksPath) : null
             if (ksFile != null && ksFile.exists()) {
                 storeFile ksFile
-                if (project.hasProperty('RELEASE_STORE_PASSWORD')) storePassword project.property('RELEASE_STORE_PASSWORD')
-                if (project.hasProperty('RELEASE_KEY_ALIAS')) keyAlias project.property('RELEASE_KEY_ALIAS')
-                if (project.hasProperty('RELEASE_KEY_PASSWORD')) keyPassword project.property('RELEASE_KEY_PASSWORD')
+                storePassword project.hasProperty('RELEASE_STORE_PASSWORD') ? project.property('RELEASE_STORE_PASSWORD') : System.getenv('KEYSTORE_PASSWORD')
+                keyAlias project.hasProperty('RELEASE_KEY_ALIAS') ? project.property('RELEASE_KEY_ALIAS') : System.getenv('KEY_ALIAS')
+                keyPassword project.hasProperty('RELEASE_KEY_PASSWORD') ? project.property('RELEASE_KEY_PASSWORD') : System.getenv('KEY_PASSWORD')
             }
         }
     }
